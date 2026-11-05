@@ -816,7 +816,7 @@ function openSold(k,from,deep){
   <div class="ask"><h3>Selling in ${esc(x[1])}?</h3><p>Ask Leigh how this sale went, and what it means for your home.</p><div class="contact">${contactBtns(`Selling near ${x[0]}, ${x[1]}`,msg,"call")}</div></div></div>`;
   showDlg(deep?null:"#sold-"+k);
 }
-function showDlg(url){$("dlg").hidden=false;document.documentElement.style.overflow="hidden";for(const el of[document.querySelector("header.top"),$("main"),document.querySelector("footer.foot"),document.querySelector(".tabbar")])el.inert=true;if(url!==null)try{history.pushState({dlg:1},"",url||undefined)}catch(err){}dlgHash=location.hash;$("dlg-title").focus()}
+function showDlg(url){$("dlg").hidden=false;{const d=$("dlg"),x=$("dlg-box").querySelector(".dlg-x");if(x){d.querySelectorAll(":scope>.dlg-x").forEach(e=>e.remove());d.appendChild(x)}}/* keep the close button outside the scrolling box so it stays visible */document.documentElement.style.overflow="hidden";for(const el of[document.querySelector("header.top"),$("main"),document.querySelector("footer.foot"),document.querySelector(".tabbar")])el.inert=true;if(url!==null)try{history.pushState({dlg:1},"",url||undefined)}catch(err){}dlgHash=location.hash;$("dlg-title").focus()}
 let dlgHash="";
 function closeDlg(restore,fromPop){
   if(!fromPop&&history.state&&history.state.dlg){history.back();return}
