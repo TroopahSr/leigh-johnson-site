@@ -25,6 +25,20 @@
 @font-face{font-family:"Inter";font-style:normal;font-weight:400 700;font-display:swap;
   src:url("fonts/inter-latin-ext.woff2") format("woff2");
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+
+/* reviews carousel: native horizontal scroll so the phone handles left/right vs up/down itself */
+.rv-wrap{position:relative;margin-top:32px}
+.rv-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 max(22px,calc((100vw - 1036px)/2));padding:4px max(22px,calc((100vw - 1036px)/2)) 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y}
+.rv-track::-webkit-scrollbar{display:none}
+.rv-track:focus{outline:none}
+.rv{flex:0 0 min(84vw,340px);scroll-snap-align:start;margin:0;background:#fff;border-radius:22px;padding:22px 24px;text-align:left;display:flex;flex-direction:column}
+.rv-stars{color:#1d1d1f;font-size:14px;letter-spacing:2px;margin:0 0 10px}
+.rv blockquote{margin:0;font-size:16px;line-height:1.5;flex:1}
+.rv figcaption{color:var(--sub);font-size:14px;margin-top:14px}
+.rv-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.95);font-size:22px;line-height:1;color:#111;box-shadow:0 2px 10px rgba(0,0,0,.14);cursor:pointer;display:grid;place-items:center;padding:0 0 2px}
+.rv-nav.prev{left:10px}.rv-nav.next{right:10px}.rv-nav[hidden]{display:none}
+@media(hover:none){.rv-nav{display:none}}
+.rv-count{text-align:center;color:var(--sub);font-size:13px;margin-top:10px;font-variant-numeric:tabular-nums}
 </style>
 
 
@@ -235,6 +249,9 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .slot-h .st{font-size:14px;font-weight:500;color:var(--sub)}
 .live{color:var(--blue);font-weight:600}
 .oc.done{opacity:.6}
+.oc .open-time{display:block;color:var(--blue,#0071e3);font-size:14px;font-weight:600;line-height:1.5;margin-bottom:10px}
+.oc .open-status{display:block;color:var(--sub);font-size:12px;font-weight:500}
+#oh-list>.grid3{margin-bottom:32px}
 .fin{margin-top:8px;border-top:1px solid var(--line)}
 .fin summary{cursor:pointer;font-weight:600;min-height:52px;list-style:none;display:flex;align-items:center;justify-content:space-between}
 .fin summary::-webkit-details-marker{display:none}
@@ -267,6 +284,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 .card-gal{display:block;touch-action:manipulation}
 .card-gal .cg-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;width:100%;height:100%;position:absolute;inset:0;touch-action:pan-y;overscroll-behavior-x:contain}
 .card-gal .cg-track.is-drag{scroll-snap-type:none;scroll-behavior:auto}
+@media (hover:none) and (pointer:coarse){.card-gal .cg-track{overflow-x:hidden;touch-action:pan-y}}
 .card-gal .cg-track::-webkit-scrollbar{display:none}
 .card-gal .cg-track img{position:relative;inset:auto;flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;opacity:1;pointer-events:none;background:#dfe6f0}
 .card-gal .cg-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.92);font-size:20px;line-height:1;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.16);cursor:pointer;display:grid;place-items:center;padding:0 0 2px;-webkit-tap-highlight-color:transparent}
@@ -383,6 +401,8 @@ form .ok a{color:var(--blue)}
 .copybox{margin-top:10px;white-space:pre-wrap;font-size:13px;background:var(--alt);border-radius:var(--r-s);padding:10px 12px;user-select:all}
 [aria-invalid="true"]{border-color:var(--red)!important}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--blue)!important;outline-offset:2px}
+input:not([type=checkbox]):not([type=radio]):focus,input:not([type=checkbox]):not([type=radio]):focus-visible,select:focus,select:focus-visible,textarea:focus,textarea:focus-visible{outline:none!important}
+input,select,textarea{-webkit-tap-highlight-color:transparent}
 .err{color:var(--red);font-size:13px;font-weight:400}
 .pu-proof{max-width:620px;margin:-64px auto 96px;padding:0 22px;text-align:center;color:var(--sub);font-size:15px;text-wrap:balance}
 
@@ -572,16 +592,32 @@ header.top:not(.scrolled){border-bottom-color:transparent;background:rgba(255,25
 
   <section class="sec" id="reviews">
     <div class="wrap quote">
-      <p class="stars" role="img" aria-label="5 out of 5 stars">★★★★★</p>
-      <blockquote>“Leigh kept us informed of what was happening, next steps at each milestone and was extremely knowledgeable of the industry and market conditions.”</blockquote>
-      <p class="who">Seller, Flinders View</p>
-      <div class="minis">
-        <figure><blockquote>“We have just bought our first home through Leigh and he has made it the smoothest, most stress free experience ever.”</blockquote><figcaption>Buyer, Brassall</figcaption></figure>
-        <figure><blockquote>“We were never left guessing, Leigh consistently kept us in the loop with prompt updates, clear feedback after open homes, and honest advice every step of the way.”</blockquote><figcaption>Seller, Lowood</figcaption></figure>
-        <figure><blockquote>“Leigh was a pleasure to work with. He even answered a pocket dial at 530am.”</blockquote><figcaption>Seller, Bundamba</figcaption></figure>
-      </div>
-      <p class="who" style="margin-top:24px"><span style="display:inline-block">4.8 from 16 reviews.</span> <a class="link" href="https://www.realestate.com.au/agent/leigh-johnson-3658768" target="_blank" rel="noopener" aria-label="Read them on realestate.com.au (opens in a new tab)">Read them on realestate.com.au ›</a></p>
+      <p class="stars" role="img" aria-label="4.8 out of 5 stars">★★★★★</p>
+      <h2 class="h2" style="margin-top:6px">4.8 from 16 reviews.</h2>
+      <p class="who">Verified reviews on <a class="link" href="https://www.realestate.com.au/agent/leigh-johnson-3658768" target="_blank" rel="noopener">realestate.com.au</a>. Swipe to read more.</p>
     </div>
+    <div class="rv-wrap">
+      <div class="rv-track" id="rv-track" tabindex="0" role="group" aria-label="Client reviews, swipe for more">
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Highly recommend Leigh and team NGU. Leigh went above and beyond to keep me informed on every step. Selling a deceased estate was one of the mentally hardest things I've had to do, and Leigh made it so much easier with care and attention. He was patient with me and understood my need to work around my job schedule. He truely is someone I trusted with the selling process, and would use again if I ever need to sell or buy. Thank you”</blockquote><figcaption>Seller of house in Lowood, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Working with Leigh Johnson from NGU Real Estate was an absolute pleasure from start to finish. From day one, Leigh demonstrated a high level of professionalism, deep market knowledge, and a genuine dedication to getting us the highest sale in our complex. What stood out to us most was Leigh's ability to conduct communication for all. We were never left guessing, Leigh consistently kept us in the loop with prompt updates, clear feedback after open homes, and honest advice every step of the way.”</blockquote><figcaption>Seller of house in Lowood, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“From start to finish, Leigh was friendly, professional and always willing to help with any questions I had regarding the property. I am extremely grateful for all his help, and would definitely seek help/guidance from him for future purchases and investments. Couldn’t be more happier with his services. Cheers Leigh!”</blockquote><figcaption>Buyer of house in Eastern Heights, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh from NGU real estate was very helpful in every aspect of my purchase, nothing was too much trouble. He was friendly and easy to talk to. Kept in contact to make sure we were ok and to give advice. He was great to do business with.”</blockquote><figcaption>Buyer of house in Moores Pocket, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh has been absolutely phenomenal the entire buying process for my partner and I. We have just bought our first home through Leigh and he has made it the smoothest, most stress free experience ever. We are so grateful to have been working with him. We will be recommending all our family and friends to go with Leigh! Thank you again sooo much!”</blockquote><figcaption>Buyer of house in Brassall, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh is a professional, hardworking, personable agent. His commitment is second to none and he goes the extra mile. He communicated every step of the way in the selling process and went above and beyond for us. Highly recommend Leigh- extremely satisfied with the price we received and with Leigh's professionalism.”</blockquote><figcaption>Seller of house in Brassall, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“To Leigh, Corey and the NGU team, looking after their client is the number 1 priority and we feel very lucky to have them represent us in the sale of our home. They know their market very well. We have no hesitation in recommending them to anyone buying or selling their home.”</blockquote><figcaption>Seller of house in Bundamba, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh was a pleasure to work with. He even answered a pocket dial at 530am. Quick responses and all my task requirements were completed quickly and professionally.”</blockquote><figcaption>Seller of house in Bundamba, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh kept us informed of what was happening, next steps at each milestone and was extremely knowledgeable of the industry and market conditions. He also looked after the property given we were out of area. Leigh marketed the property slightly above other agents stating the market movement and justifying his research.”</blockquote><figcaption>Seller of house in Flinders View, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh was good had lots of knowledge of the area and was very professional”</blockquote><figcaption>Seller of unit in Bundamba, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Had a great experience buying our property through Leigh, Thank you for making the whole process so easy for us!”</blockquote><figcaption>Buyer of house in Redbank Plains, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“It was a pleasure dealing with Leigh. He is dedicated and focused in his profesion. We had great communication throughout the process of purchasing the property. He handles the whole deal with experience that makes everything flow smoothly. Highly recomend him.”</blockquote><figcaption>Buyer of house in Redbank Plains, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Easy, simple and effective. Leigh and Matt worked quickly to sell my property at a great price for a great rate. Both were very personable and genuine. They didn’t muck around or waste money on things I didn’t need like flyers or videos. Both were very knowledgeable of the Ipswich area.”</blockquote><figcaption>Seller of house in Bundamba, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Hardworking, excellent communication and coordination, fair way do things.”</blockquote><figcaption>Buyer of house in Redbank Plains, QLD</figcaption></figure>
+          <figure class="rv"><p class="rv-stars" aria-label="5 out of 5 stars">★★★★★</p><blockquote>“Leigh worked tirelessly to deliver above and beyond our expectations. As a vendor I already had a predetermined path to market planned. However a novel idea by Leigh just in the nick of time unlocked an alternative path to sales success. And the good thing from a vendor's perspective, the idea was a short term, cost free, and ultimately pain free approach. Leigh delivered on price expectation, while saving months off the sales process. Benchmark service provided, benchmark price achieved!”</blockquote><figcaption>Seller of house in Springfield Lakes, QLD</figcaption></figure>
+      </div>
+      <button type="button" class="rv-nav prev" aria-label="Previous review" hidden>‹</button><button type="button" class="rv-nav next" aria-label="Next review">›</button>
+    </div>
+    <p class="rv-count" id="rv-count" aria-live="polite">1 / 15</p>
+    <p class="who" style="text-align:center;margin-top:8px"><a class="link" href="https://www.realestate.com.au/agent/leigh-johnson-3658768" target="_blank" rel="noopener" aria-label="Read all reviews on realestate.com.au (opens in a new tab)">Read them on realestate.com.au ›</a></p>
   </section>
 
   <section class="sec">
@@ -960,7 +996,7 @@ const cardPhoto=(p,tag,sub)=>{
   if(galAll.length>1){
     const gal=galAll.slice(0,CARD_GAL_MAX);
     const maxDots=Math.min(gal.length,7);const dots=`<span class="cg-dots" aria-hidden="true">${Array.from({length:maxDots},(_,i)=>`<i${i===0?` class="on"`:""}></i>`).join("")}</span>`;
-    return `<span class="ph card-gal" data-card-gal data-n="${gal.length}"><span class="cg-track" tabindex="0" role="group" aria-label="${esc(`${p[1]} photos, swipe for more`)}">${cardGalImgs(p,gal)}</span><button type="button" class="cg-nav prev" aria-label="Previous photo" hidden>‹</button><button type="button" class="cg-nav next" aria-label="Next photo">›</button>${dots}<span class="cg-count">1 / ${gal.length}</span>${tag||""}</span>`;
+    return `<span class="ph card-gal" data-card-gal data-n="${gal.length}" data-total="${galAll.length}"><span class="cg-track" tabindex="0" role="group" aria-label="${esc(`${p[1]} photos, swipe for more`)}">${cardGalImgs(p,gal)}</span><button type="button" class="cg-nav prev" aria-label="Previous photo" hidden>‹</button><button type="button" class="cg-nav next" aria-label="Next photo">›</button>${dots}<span class="cg-count">1 / ${galAll.length}</span>${tag||""}</span>`;
   }
   const badge=n>1?`<span class="ph-count">${n} photos</span>`:"";
   return PHOTOS[p&&p[0]]?`<span class="ph"><img data-src="${esc(PHOTO_BASE+PHOTOS[p[0]])}" alt="${esc(p[1])}" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('empty-ph');this.remove()">${tag||""}${badge}</span>`:`<span class="ph empty-ph" aria-hidden="true">${tag||""}<span class="ph-sub">${esc(sub||(p?p[2]:""))}</span></span>`;
@@ -1030,7 +1066,7 @@ function syncCardGal(root){
   const t=root.querySelector(".cg-track");if(!t)return;
   const n=+root.dataset.n||t.children.length;
   const cur=Math.max(0,Math.min(n-1,Math.round(t.scrollLeft/Math.max(1,t.clientWidth))));
-  const c=root.querySelector(".cg-count");if(c)c.textContent=(cur+1)+" / "+n;
+  const tot=+root.dataset.total||n;const c=root.querySelector(".cg-count");if(c)c.textContent=(cur+1)+" / "+tot+(cur===n-1&&tot>n?" · tap for all":"");
   const dots=[...root.querySelectorAll(".cg-dots i")];
   if(dots.length){
     let on=0;
@@ -1112,8 +1148,9 @@ function onCardGalMove(track, x, y, e){
   const dx=x-st.x0, dy=y-st.y0;
   const adx=Math.abs(dx), ady=Math.abs(dy);
   if(!st.axis){
-    if(adx<8&&ady<8)return;
-    st.axis = adx>ady ? "h" : "v";
+    const th=st.touch?2:8;
+    if(adx<th&&ady<th)return;
+    st.axis = adx>ady*1.15 ? "h" : "v";
     if(st.axis==="h"){
       track.classList.add("is-drag");
       // freeze startScroll at lock time for stable dragging
@@ -1162,7 +1199,28 @@ function onCardGalUp(track){
   }
   cardGalDrag.delete(track);
 }
+/* Touch: real touch events so a sideways swipe can block page scroll from its first move (iOS ignores pointer preventDefault) */
+document.addEventListener("touchstart",e=>{
+  const track=e.target.closest&&e.target.closest(".card-gal .cg-track");
+  if(!track||e.touches.length!==1)return;
+  const t0=e.touches[0];
+  onCardGalDown(track,t0.clientX,t0.clientY,"touch");
+  const st0=cardGalDrag.get(track);if(st0)st0.touch=true;
+  const cleanup=()=>{track.removeEventListener("touchmove",move);track.removeEventListener("touchend",end);track.removeEventListener("touchcancel",end)};
+  const move=ev=>{
+    if(ev.touches.length!==1){cleanup();if(cardGalDrag.has(track))onCardGalUp(track);return}
+    const st=cardGalDrag.get(track);if(!st){cleanup();return}
+    const tt=ev.touches[0];
+    onCardGalMove(track,tt.clientX,tt.clientY,ev);
+    if(st.axis==="v"){cleanup();cardGalDrag.delete(track);track.classList.remove("is-drag")}
+  };
+  const end=()=>{cleanup();if(cardGalDrag.has(track))onCardGalUp(track)};
+  track.addEventListener("touchmove",move,{passive:false});
+  track.addEventListener("touchend",end,{passive:true});
+  track.addEventListener("touchcancel",end,{passive:true});
+},{passive:true});
 document.addEventListener("pointerdown",e=>{
+  if(e.pointerType==="touch")return;
   if(e.pointerType==="mouse"&&e.button!==0)return;
   const track=e.target.closest(".card-gal .cg-track");
   if(!track)return;
@@ -1201,7 +1259,7 @@ document.addEventListener("keydown",e=>{
     track.scrollTo({left:next*track.clientWidth,behavior:"smooth"});
     return;
   }
-  const card=e.target.closest?.("article.card.lc[data-listing],article.card.lc[data-open]");
+  const card=e.target.closest?.("article.card.lc[data-listing],article.card.lc[data-open],article.card.lc[data-sold]");
   if(card&&(e.key==="Enter"||e.key===" ")){
     if(e.target.closest(".card-gal"))return;
     e.preventDefault();
@@ -1222,7 +1280,7 @@ document.addEventListener("click",e=>{
   }
   const enq=e.target.closest("[data-enquire]");
   if(enq){e.preventDefault();openEnquiry({topic:enq.dataset.topic||"General",property:enq.dataset.property||"",from:enq});return}
-  const so=e.target.closest("[data-sold]");if(so){openSold(+so.dataset.sold,so);return}
+  const so=e.target.closest("[data-sold]");if(so){const track=e.target.closest(".card-gal .cg-track");if(e.target.closest(".card-gal .cg-nav,.card-gal .cg-dots"))return;if(track&&cardGalMoved.get(track)?.moved){cardGalMoved.delete(track);return}openSold(+so.dataset.sold,so);return}
   const li=e.target.closest("[data-listing]");
   if(li){
     const track=e.target.closest(".card-gal .cg-track");
@@ -1502,9 +1560,9 @@ function passes(i){
 function card(i,st){
   const p=byNo[i.n],meta=[];
   if(p[11])meta.push('<span class="vid">▶ Video</span>');
-  return `<article class="card tap lc oc${st==="done"?" done":""}" data-open="${i.d}|${i.s}|${i.n}" tabindex="0" role="link" aria-label="${esc(`${p[1]}, ${p[2]}, ${p[3]}, open ${range(i.s,i.e)}${st==="done"?", finished":""}`)}">
+  return `<article class="card tap lc oc${st==="done"?" done":""}" data-open="${i.d}|${i.s}|${i.n}" tabindex="0" role="link" aria-label="${esc(`${p[1]}, ${p[2]}, ${p[3]}, open ${S[i.d].label}, ${range(i.s,i.e)}${st==="done"?", finished":""}`)}">
     ${cardPhoto(p)}
-    <span class="bd">${kicker(p)}<span class="sr">Open ${range(i.s,i.e)}${st==="done"?", finished":""}.</span><span class="addr">${esc(p[1])}</span><span class="sub">${esc(p[2])}</span><span class="price">${esc(p[3])}</span><span class="specs">${specs(p)}</span>${meta.length?`<span class="meta">${meta.join("")}</span>`:""}</span>
+    <span class="bd"><span class="open-time">${S[i.d].label} · ${range(i.s,i.e)}${st==="live"?'<span class="open-status">Open now</span>':st==="done"?'<span class="open-status">Finished</span>':""}</span>${kicker(p)}<span class="addr">${esc(p[1])}</span><span class="sub">${esc(p[2])}</span><span class="price">${esc(p[3])}</span><span class="specs">${specs(p)}</span>${meta.length?`<span class="meta">${meta.join("")}</span>`:""}</span>
   </article>`;
 }
 function renderOH(){
@@ -1517,10 +1575,11 @@ function renderOH(){
   const items=INSP.filter(i=>i.d===day&&passes(i));
   const up=items.filter(i=>status(i.d,i.s,i.e)!=="done"),done=items.filter(i=>status(i.d,i.s,i.e)==="done");
   $("count").textContent=`${items.length} open home${items.length===1?"":"s"}${done.length?(up.length?` · ${up.length} still to come`:" · all finished"):""}`;
-  const group=arr=>{let out="",cur="";for(const i of arr){const g=i.s+"|"+i.e;if(g!==cur){if(cur)out+="</div></div>";cur=g;const st=status(i.d,i.s,i.e);out+=`<div class="slot"><h2 class="slot-h" style="font-size:16px">${range(i.s,i.e)}${st==="live"?'<span class="st live">Open now</span>':st==="done"?'<span class="st">Finished</span>':""}</h2><div class="grid3">`}out+=card(i,status(i.d,i.s,i.e))}if(cur)out+="</div></div>";return out};
+  // Every inspection owns its day/time label; shared slots are not visual groups.
+  const cards=arr=>`<div class="grid3">${arr.map(i=>card(i,status(i.d,i.s,i.e))).join("")}</div>`;
   const nextDay=DAYS[DAYS.indexOf(day)+1];
-  let html=up.length?group(up):(items.length?`<div class="empty">All of ${S[day].label}’s open homes have finished.${nextDay?` <button class="link" type="button" style="margin-left:6px" data-goday="${nextDay}">See ${S[nextDay].label} →</button>`:""}</div>`:"");
-  if(done.length)html+=`<details class="fin"${up.length?"":" open"}><summary>Finished (${done.length})</summary>${group(done)}</details>`;
+  let html=up.length?cards(up):(items.length?`<div class="empty">All of ${S[day].label}’s open homes have finished.${nextDay?` <button class="link" type="button" style="margin-left:6px" data-goday="${nextDay}">See ${S[nextDay].label} →</button>`:""}</div>`:"");
+  if(done.length)html+=`<details class="fin"${up.length?"":" open"}><summary>Finished (${done.length})</summary>${cards(done)}</details>`;
   if(!items.length)html=`<div class="empty">No open homes match those filters.</div>`;
   if(up.length&&up.length<=3)html+=`<p class="count" style="margin-top:8px">More opens are added as NGU offices confirm them.</p><p style="text-align:center;margin-top:12px"><a class="btn primary" href="tel:${PHONE}">${I.call}Call Leigh for an inspection</a></p>`;
   $("oh-list").innerHTML=html;
@@ -1535,8 +1594,8 @@ $("f-toggle").addEventListener("click",()=>{const p=$("oh-filters");p.hidden=!p.
 $("f-reset").addEventListener("click",()=>{$("q").value="";$("sub").value="";$("price").value="";$("beds").value="0";for(const f in F)F[f]=false;renderOH()});
 
 /* ---------- sold ---------- */
-const soldCardPhoto=(x,k)=>{const n=galleryOf(soldMetaOf(x)).length;const badge=n>1?`<span class="ph-count">${n} photos</span>`:"";const key="s"+k;return PHOTOS[key]?`<span class="ph"><img src="${esc(PHOTO_BASE+PHOTOS[key])}" alt="${esc(x[0])}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.parentNode.classList.add('empty-ph');this.remove()"><span class="tag">SOLD</span>${badge}</span>`:`<span class="ph empty-ph" aria-hidden="true"><span class="tag">SOLD</span><span class="ph-sub">${esc(x[1])}</span></span>`};
-$("sold-list").innerHTML=SOLD.map((x,k)=>`<button class="card tap lc" type="button" data-sold="${k}" aria-label="${esc(`${x[0]}, ${x[1]}, sold ${x[2]||"price withheld"}${x[3]?", "+x[3]:""}`)}">${soldCardPhoto(x,k)}<span class="bd"><span class="addr">${esc(x[0])}</span><span class="sub">${esc(x[1])}</span><span class="price">${x[2]?esc(x[2]):"Price withheld"}</span>${x[3]?`<span class="sold-on">Sold ${esc(x[3])}</span>`:""}<span class="specs"><span><b>${x[4]}</b> bed</span><span><b>${x[5]}</b> bath</span>${x[6]?`<span><b>${x[6]}</b> car</span>`:""}${x[7]?(x[7]<100?`<span><b>${x[7]}</b> ha</span>`:`<span><b>${x[7].toLocaleString("en-AU")}</b> m²</span>`):""}</span></span></button>`).join("");
+const soldCardPhoto=(x,k)=>{const galAll=galleryOf(soldMetaOf(x));const key="s"+k;if(galAll.length>1){const gal=galAll.slice(0,CARD_GAL_MAX);const local=PHOTOS[key]?PHOTO_BASE+PHOTOS[key]:"";const imgs=gal.map((im,i)=>{const thumb=im.t||im.s;const data=i===0?(local||thumb):thumb;return `<img data-src="${esc(data)}" alt="${esc(x[0])} photo ${i+1} of ${gal.length}" decoding="async" referrerpolicy="no-referrer" data-i="${i}">`}).join("");const maxDots=Math.min(gal.length,7);const dots=`<span class="cg-dots" aria-hidden="true">${Array.from({length:maxDots},(_,i)=>`<i${i===0?` class="on"`:""}></i>`).join("")}</span>`;return `<span class="ph card-gal" data-card-gal data-n="${gal.length}" data-total="${galAll.length}"><span class="cg-track" tabindex="0" role="group" aria-label="${esc(`${x[0]} photos, swipe for more`)}">${imgs}</span><button type="button" class="cg-nav prev" aria-label="Previous photo" hidden>‹</button><button type="button" class="cg-nav next" aria-label="Next photo">›</button>${dots}<span class="cg-count">1 / ${galAll.length}</span><span class="tag">SOLD</span></span>`}const n=galAll.length;const badge=n>1?`<span class="ph-count">${n} photos</span>`:"";return PHOTOS[key]?`<span class="ph"><img src="${esc(PHOTO_BASE+PHOTOS[key])}" alt="${esc(x[0])}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.parentNode.classList.add('empty-ph');this.remove()"><span class="tag">SOLD</span>${badge}</span>`:`<span class="ph empty-ph" aria-hidden="true"><span class="tag">SOLD</span><span class="ph-sub">${esc(x[1])}</span></span>`};
+$("sold-list").innerHTML=SOLD.map((x,k)=>`<article class="card tap lc" tabindex="0" role="link" data-sold="${k}" aria-label="${esc(`${x[0]}, ${x[1]}, sold ${x[2]||"price withheld"}${x[3]?", "+x[3]:""}`)}">${soldCardPhoto(x,k)}<span class="bd"><span class="addr">${esc(x[0])}</span><span class="sub">${esc(x[1])}</span><span class="price">${x[2]?esc(x[2]):"Price withheld"}</span>${x[3]?`<span class="sold-on">Sold ${esc(x[3])}</span>`:""}<span class="specs"><span><b>${x[4]}</b> bed</span><span><b>${x[5]}</b> bath</span>${x[6]?`<span><b>${x[6]}</b> car</span>`:""}${x[7]?(x[7]<100?`<span><b>${x[7]}</b> ha</span>`:`<span><b>${x[7].toLocaleString("en-AU")}</b> m²</span>`):""}</span></span></article>`).join("");
 
 {const cards=[...$("sold-list").children];cards.forEach((c,i)=>{if(i>=12)c.hidden=true});$("sold-more").textContent=`Show all ${cards.length} sales`;$("sold-more").addEventListener("click",()=>{cards.forEach(c=>c.hidden=false);$("sold-more-wrap").hidden=true;cards[12]&&cards[12].focus();hydrateCardPhotos($("sold-list"))})}
 $("home-sold").innerHTML=[21,0,1].map(k=>{const e=document.querySelector(`#sold-list [data-sold="${k}"]`).cloneNode(true);e.hidden=false;return e.outerHTML}).join("");
@@ -1610,6 +1669,15 @@ setTimeout(()=>revealAll(document),50);
 renderFS();renderOH();route();
 const _hyd=()=>hydrateCardPhotos(document);
 if("requestIdleCallback" in window)requestIdleCallback(_hyd,{timeout:400});else setTimeout(_hyd,0);
+</script>
+
+<script>
+(function(){const t=document.getElementById("rv-track");if(!t)return;const w=t.parentNode,prev=w.querySelector(".rv-nav.prev"),next=w.querySelector(".rv-nav.next"),c=document.getElementById("rv-count"),n=t.children.length;
+const step=()=>{const a=t.children[0],b=t.children[1];return b?b.offsetLeft-a.offsetLeft:t.clientWidth};
+const sync=()=>{const i=Math.round(t.scrollLeft/step());c.textContent=Math.min(n,i+1)+" / "+n;prev.hidden=t.scrollLeft<4;next.hidden=t.scrollLeft+t.clientWidth>=t.scrollWidth-4};
+t.addEventListener("scroll",()=>requestAnimationFrame(sync),{passive:true});addEventListener("resize",sync);
+prev.addEventListener("click",()=>t.scrollBy({left:-step(),behavior:"smooth"}));next.addEventListener("click",()=>t.scrollBy({left:step(),behavior:"smooth"}));
+t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"){e.preventDefault();next.click()}if(e.key==="ArrowLeft"){e.preventDefault();prev.click()}});sync()})();
 </script>
 </body>
 </html>
